@@ -203,6 +203,14 @@ impl Importer {
                         };
                         origins.push(CompiledImport::new(compiled, alias));
                     }
+                    "PACKING/unpack254" => {
+                        let compiled = unpack(254);
+                        let alias = match import.alias {
+                            Some(ref alias) => alias.clone(),
+                            None => String::from("unpack128"),
+                        };
+                        origins.push(CompiledImport::new(compiled, alias));
+                    }
                     s => {
                         return Err(CompileError::ImportError(Error::new(format!(
                             "Packing helper {} not found",
