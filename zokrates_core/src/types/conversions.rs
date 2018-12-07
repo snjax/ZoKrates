@@ -392,6 +392,40 @@ mod tests {
         }
 
         #[test]
+        fn unpack254() {
+            let nbits = 254;
+
+            let unpack: FlatProg<FieldPrime> = unpack(nbits);
+            let unpack = &unpack.functions[0];
+
+            assert_eq!(unpack.id, String::from("main"));
+            assert_eq!(
+                unpack.arguments,
+                vec![FlatParameter::private(FlatVariable::new(0))]
+            );
+            assert_eq!(unpack.statements.len(), nbits + 1 + 1 + 1); // 254 bit checks, 1 directive, 1 sum check, 1 return
+            assert_eq!(
+                unpack.statements[0],
+                FlatStatement::Directive(DirectiveStatement::new(
+                    (0..FieldPrime::get_required_bits())
+                        .map(|i| FlatVariable::new(i + 1))
+                        .collect(),
+                    Helper::Rust(RustHelper::Bits),
+                    vec![FlatVariable::new(0)]
+                ))
+            );
+            assert_eq!(
+                *unpack.statements.last().unwrap(),
+                FlatStatement::Return(FlatExpressionList {
+                    expressions: (FieldPrime::get_required_bits() - nbits
+                        ..FieldPrime::get_required_bits())
+                        .map(|i| FlatExpression::Identifier(FlatVariable::new(i + 1)))
+                        .collect()
+                })
+            );
+        }
+		
+        #[test]
         fn pack128() {
             let pack: FlatProg<FieldPrime> = pack(128);
             let pack = &pack.functions[0];

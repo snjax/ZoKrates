@@ -207,7 +207,26 @@ impl Importer {
                         let compiled = unpack(254);
                         let alias = match import.alias {
                             Some(ref alias) => alias.clone(),
-                            None => String::from("unpack128"),
+                            None => String::from("unpack254"),
+                        };
+                        origins.push(CompiledImport::new(compiled, alias));
+                    }
+                    s => {
+                        return Err(CompileError::ImportError(Error::new(format!(
+                            "Packing helper {} not found",
+                            s
+                        ))));
+                    }
+                }
+            } else if import.source.starts_with("PACKING2") {
+                use types::conversions::{unpack};
+
+                match import.source.as_ref() {
+                    "PACKING2/unpack254" => {
+                        let compiled = unpack(254);
+                        let alias = match import.alias {
+                            Some(ref alias) => alias.clone(),
+                            None => String::from("unpack254"),
                         };
                         origins.push(CompiledImport::new(compiled, alias));
                     }
